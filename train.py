@@ -4,6 +4,7 @@ from model import *
 from data import *
 import argparse
 from torch.optim.lr_scheduler import CosineAnnealingLR
+import os
 
 
 if __name__ == '__main__':
@@ -13,6 +14,8 @@ if __name__ == '__main__':
     parser.add_argument('--test-path', type=str, help='Where training data is located')
     parser.add_argument("--batch-size", default=32, type=int, help ="number of batch size")
     parser.add_argument('--epochs', default=10, type=int, help="number of epochs")
+    parser.add_argument('--save-path', type=str, help="where to save the model")
+    parser.add_argument('--ckpt', type=str, default='None', help='checkpoint weight path if have one')
     args = parser.parse_args()
 
     transform = transforms.Compose([
@@ -24,6 +27,7 @@ if __name__ == '__main__':
     ])
     train_path = args.train_path
     test_path = args.test_path
+    
 
     train_dataset = ImageDataset(data_dir = train_path,
                                     transform = transform)
@@ -38,6 +42,9 @@ if __name__ == '__main__':
                                 shuffle = False)
     
     model = EffNetB0()
+    checkpoint = 'None'
+    if args.ckpt != 'None':
+        checkpoint = torch.load(args.ckpt)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adadelta(model.parameters(), rho=0.9, eps=1e-6)
     scheduler = CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=0.0001)
@@ -50,9 +57,18 @@ if __name__ == '__main__':
 
     train_losses = []
     test_losses = []
-    
+    best_acc = -100
+    start_epoch = 0
 
-    for epoch in range(args.epochs):
+    if checkpoint != 'None':
+        model.load_state_dict(checkpoint['model_state_dict'])
+        start_epoch = checkpoint["epoch"]
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    
+    if not os.path.isdir(args.save_path):
+        os.makedirs(args.save_path)
+
+    for epoch in range(start_epoch, args.epochs):
         train_loss = 0.
         train_acc = 0.
         model.train()   
@@ -100,4 +116,15 @@ if __name__ == '__main__':
 
         print(f"Epochs {epoch+1}: Training loss: {train_loss:.2f} || Test loss: {test_loss:2f}")
         print(f"\t Train acc: {train_acc:2f} || Test acc: {test_acc:2f}")
+
+        checkpoint = {
+            "model_state_dict": model.state_dict(),
+            "epoch": epoch,
+            "optimizer_state_dict": optimizer.state_dict()
+        }
+        torch.save(checkpoint, os.path.join(args.save_path, "last.pt"))
+        if test_acc > best_acc:
+            torch.save(checkpoint, os.path.join(args.save_path, "best.pt"))
+            best_acc = test_acc
+
 
