@@ -5,5 +5,5 @@ To run, download data at [here](https://drive.google.com/drive/folders/13LVR29hO
 
 To train
 ```
-python train.py --epochs <epochs> --batch-size <batch-size> --train-path path/to/train --test-path path/to/test
+python train.py --epochs <epochs> --batch-size <batch-size> --train-path path/to/train --test-path path/to/test --save-path path/to/save
 ```
