@@ -41,6 +41,7 @@ if __name__ == '__main__':
                                 batch_size = args.batch_size,
                                 shuffle = False)
     
+    print(train_dataset.classes)
     model = EffNetB0()
     checkpoint = 'None'
     if args.ckpt != 'None':
