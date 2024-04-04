@@ -14,6 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('--test-path', type=str, help='Where training data is located')
     parser.add_argument("--batch-size", default=32, type=int, help ="number of batch size")
     parser.add_argument('--epochs', default=10, type=int, help="number of epochs")
+    parser.add_argument('--num-class', default=2, type=int, help="number of classes")
     parser.add_argument('--save-path', type=str, help="where to save the model")
     parser.add_argument('--ckpt', type=str, default='None', help='checkpoint weight path if have one')
     args = parser.parse_args()
@@ -42,7 +43,7 @@ if __name__ == '__main__':
                                 shuffle = False)
     
     print(train_dataset.classes)
-    model = EffNetB0()
+    model = EffNetB0(args.num_class)
     checkpoint = 'None'
     if args.ckpt != 'None':
         checkpoint = torch.load(args.ckpt)
