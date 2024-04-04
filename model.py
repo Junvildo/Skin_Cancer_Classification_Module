@@ -3,7 +3,7 @@ from torch import nn
 import timm
 
 class EffNetB0(nn.Module):
-    def __init__(self, num_classes = 53):
+    def __init__(self, num_classes = 2):
         super().__init__()
         self.base_model = timm.create_model('efficientnet_b0', pretrained = True)
         # remove the classifier layer of efficientnet_b0
