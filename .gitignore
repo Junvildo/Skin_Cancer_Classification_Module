@@ -4,3 +4,4 @@ data
 checkpoint
 checkpoint_dinov2
 data.zip
+*.onnx
