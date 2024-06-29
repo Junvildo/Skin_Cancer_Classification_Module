@@ -5,3 +5,5 @@ checkpoint
 checkpoint_dinov2
 data.zip
 *.onnx
+checkpoint_onnx
+checkpoint_dinov2_optim
